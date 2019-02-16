@@ -34,8 +34,8 @@ class Dog
         SQL
         DB[:conn].execute(sql, self.name, self.breed)
         @id = DB[:conn].execute("SELECT last_insert_rowid() FROM dogs")[0][0]
-        self
     end
+    self
   end
 
   def self.create(attributes)
@@ -43,15 +43,13 @@ class Dog
   end
 
   def self.find_by_id(id)
-    sql = "SELECT * FROM dogs WHERE id = ?;"
+    sql = "SELECT * FROM dogs WHERE id = ? LIMIT 1;"
     result = DB[:conn].execute(sql, id)[0]
-    # how are we able to change the order of these args but it still works?
-    # in initialize, are keyword arguments not ordered?
     Dog.new(id: result[0], name: result[1], breed: result[2])
   end
 
   def self.find_or_create_by(name:, breed:)
-    sql = "SELECT * FROM dogs WHERE name = ? AND breed = ?;"
+    sql = "SELECT * FROM dogs WHERE name = ? AND breed = ? LIMIT 1;"
     dog = DB[:conn].execute(sql, name, breed)
     if !dog.empty?
       dog_data = dog[0]
@@ -67,7 +65,7 @@ class Dog
   end
 
   def self.find_by_name(name)
-    sql = "SELECT * FROM dogs WHERE name = ?"
+    sql = "SELECT * FROM dogs WHERE name = ? LIMIT 1;"
     row = DB[:conn].execute(sql, name)[0]
     self.new_from_db(row)
   end
